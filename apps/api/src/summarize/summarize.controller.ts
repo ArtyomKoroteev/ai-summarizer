@@ -1,7 +1,8 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { SummarizeService } from './summarize.service';
+import type { SummarizeRequest } from '@repo/shared';
 
 @ApiTags('summarize')
 @Controller('ai')
@@ -15,16 +16,17 @@ export class SummarizeController {
       type: 'object',
       properties: {
         text: { type: 'string' },
+        mode: { type: 'enum', enum: ['short', 'detailed', 'bullets'] },
         language: { type: 'string' },
       },
     },
   })
   @ApiResponse({ status: 200, description: 'Returns summarized text' })
-  async summarize(@Body() request: { text: string; language: string }) {
-    return await this.summarizeService.summarize(
-      request.text,
-      request.language,
-    );
-    // return this.summarizeService.summarize(body.text);
+  async summarize(@Body() request: SummarizeRequest) {
+    if (!request) {
+      throw new BadRequestException('Request is required');
+    }
+    const result = await this.summarizeService.summarize(request);
+    return result;
   }
 }

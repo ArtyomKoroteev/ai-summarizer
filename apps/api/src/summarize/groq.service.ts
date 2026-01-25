@@ -21,7 +21,7 @@ export class GroqService {
       this.configService.get<string>('AI_MODEL') || 'llama-3.1-8b-instant';
   }
 
-  async complete(prompt: string) {
+  async complete(prompt: string): Promise<string> {
     const result = await this.client.chat.completions.create({
       messages: [
         {
@@ -34,6 +34,10 @@ export class GroqService {
       // groq llama-3.1-8b-instant support only type in response_format
       // response_format: { type: 'json_object' },
     });
-    return result.choices[0].message.content;
+    const content = result.choices[0]?.message.content;
+    if (!content) {
+      throw new Error('No content returned from AI');
+    }
+    return content;
   }
 }
