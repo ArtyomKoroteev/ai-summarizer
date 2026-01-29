@@ -20,12 +20,6 @@
           />
         </svg>
       </div>
-      <nav class="nav">
-        <ul class="flex gap-4">
-          <li><a href="#">Home</a></li>
-          <li><a href="#">About</a></li>
-        </ul>
-      </nav>
     </header>
     <main class="main h-full">
       <div class="main-content flex align-center justify-center flex-col gap-2 mt-10 mb-20">
@@ -36,27 +30,13 @@
       </div>
       <div class="wrapper">
         <div class="wrapper-content mb-4">
-          <textarea
-            class="border w-full border-blue-500 rounded-md p-2 min-h-96 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            col="10"
-            resize="none"
-            name="text"
-            id="text"
-            placeholder="Paste your text here"
-            v-model="text"
-          ></textarea>
+          <BaseTextarea v-model="text"  placeholder="Paste your text here" id="prompt-input" label="Prompt" :show-label="false" />
         </div>
-        <div class="wrapper-summary flex gap-2 justify-end mb-10">
-          <select class="border w-full border-blue-500 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="language">
-            <option value="auto">Auto</option>
-            <option value="en">English</option>
-            <option value="ru">Russian</option>
-          </select>
-          <select class="border w-full border-blue-500 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="mode">
-            <option value="bullets">Bullets</option>
-            <option value="short">Short</option>
-            <option value="detailed">Detailed</option>
-          </select>
+        <div class="wrapper-summary flex gap-2 justify-between mb-10">
+          <div class="flex gap-2 w-full max-w-2xl">
+            <BaseSelect v-model="language" :options="languagesOptions" label="Language" id="language-select" />
+            <BaseSelect v-model="mode" :options="modesOptions" label="Mode" id="mode-select" />
+          </div>
           <button
             class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-400 cursor-pointer"
             @click="summarizeText"
@@ -79,6 +59,17 @@
 import { summarize } from './api/summarize'
 import { ref } from 'vue'
 import type { SummarizeResponse, SummarizeLanguage, SummarizeMode } from '@repo/shared'
+
+const languagesOptions = [
+  { value: 'auto', label: 'Auto' },
+  { value: 'en', label: 'English' },
+  { value: 'ru', label: 'Russian' },
+]
+const modesOptions = [
+  { value: 'bullets', label: 'Bullets' },
+  { value: 'short', label: 'Short' },
+  { value: 'detailed', label: 'Detailed' },
+]
 
 const text = ref('')
 const language = ref<SummarizeLanguage>('en')
