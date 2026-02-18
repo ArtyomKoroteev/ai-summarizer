@@ -52,6 +52,7 @@
           </ul>
       </div>
     </main>
+    <BaseTabs :tabs="tabs" />
   </div>
 </template>
 
@@ -69,8 +70,13 @@ const modesOptions = [
   { value: 'bullets', label: 'Bullets' },
   { value: 'short', label: 'Short' },
   { value: 'detailed', label: 'Detailed' },
-]
+];
 
+const tabs = [
+  { id: 'summary', title: 'Summary', description: 'Summary of the text' },
+  { id: 'tags', title: 'Tags', description: 'Tags of the text' },
+  { id: 'keywords', title: 'Keywords', description: 'Keywords of the text' },
+]
 const text = ref('')
 const language = ref<SummarizeLanguage>('en')
 const mode = ref<SummarizeMode>('bullets')
