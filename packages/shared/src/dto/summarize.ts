@@ -10,4 +10,5 @@ export type SummarizeRequest = {
 export type SummarizeResponse = {
   title?: string;
   summary: string[];
+  tags: string[];
 };

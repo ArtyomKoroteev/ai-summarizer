@@ -52,10 +52,23 @@ ${request?.text}`;
   }
 
   private parseResponse(response: string): SummarizeResponse {
-    const result = JSON.parse(response) as SummarizeResponse;
+    const parsed: unknown = JSON.parse(response);
+
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('Invalid response format');
+    }
+
+    const result = parsed as Record<string, unknown>;
+
+    const ensureStringArray = (value: unknown): string[] => {
+      if (!Array.isArray(value)) return [];
+      return value.filter((item): item is string => typeof item === 'string');
+    };
+
     return {
-      title: result?.title || '',
-      summary: result?.summary || [],
+      title: typeof result.title === 'string' ? result.title : '',
+      summary: ensureStringArray(result.summary),
+      tags: ensureStringArray(result.tags),
     };
   }
 }
