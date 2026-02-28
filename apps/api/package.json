@@ -22,12 +22,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@repo/shared": "workspace:*",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.5",
+    "@nestjs/throttler": "^6.5.0",
+    "@repo/shared": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "groq-sdk": "^0.37.0",
