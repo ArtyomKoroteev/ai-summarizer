@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GroqService } from './groq.service';
-import type {
-  SummarizeMode,
-  SummarizeRequest,
-  SummarizeResponse,
-} from '@repo/shared';
+import type { SummarizeMode, SummarizeResponse } from '@repo/shared';
+import { SummarizeRequest } from '@repo/shared';
 
 @Injectable()
 export class SummarizeService {
@@ -54,7 +51,7 @@ ${request?.text}`;
   private parseResponse(response: string): SummarizeResponse {
     const parsed: unknown = JSON.parse(response);
 
-    if (!parsed || typeof parsed !== 'object') {
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
       throw new Error('Invalid response format');
     }
 
