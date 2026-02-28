@@ -3,36 +3,16 @@
     <AppHeader />
     <main class="main h-full">
       <AppHero />
-      <div class="wrapper">
-        <div class="wrapper-content mb-4">
-          <BaseTextarea v-model="text"  placeholder="Paste your text here" id="prompt-input" label="Prompt" :show-label="false" />
-          <div class="error-message" v-if="errorMessage.length > 0">
-        <ul>
-          <li class="text-red-500 text-sm" v-for="error in errorMessage" :key="error">{{ error }}</li>
-        </ul>
-      </div>
-        </div>
-        
-        <div class="wrapper-summary flex gap-2 justify-between mb-10">
-          <div class="flex gap-2 w-full max-w-2xl">
-            <BaseSelect v-model="language" :options="languagesOptions" label="Language" id="language-select" />
-            <BaseSelect v-model="mode" :options="modesOptions" label="Mode" id="mode-select" />
-          </div>
-          <button
-            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-400 cursor-pointer"
-            @click="summarizeText"
-          >
-            Summarize
-          </button>
-        </div>
-        
-      </div>
-      <div class="wrapper-summary flex flex-col gap-2">
-        <h2 class="text-2xl font-bold">{{ summary.title }}</h2>
-        <ul class="list-disc list-inside">
-            <li v-for="item in summary.summary" :key="item">{{ item }}</li>
-          </ul>
-      </div>
+      <SummarizeForm
+        :language="language"
+        :mode="mode"
+        :text="text"
+        :languagesOptions="languagesOptions"
+        :modesOptions="modesOptions"
+        :errorMessage="errorMessage"
+        @summarize="summarizeText"
+      />
+      <SummarizeResponseText :summary="summary" />
     </main>
   </div>
 </template>
@@ -40,21 +20,13 @@
 <script setup lang="ts">
 import { summarize } from './api/summarize'
 import { ref } from 'vue'
-import type { SummarizeResponse, SummarizeLanguage, SummarizeMode } from '@repo/shared'
+import type { SummarizeResponse, SummarizeLanguage, SummarizeMode, SummarizeRequest } from '@repo/shared'
 import AppHeader from './widgets/AppHeader.vue';
 import AppHero from './widgets/AppHero.vue';
 import { AxiosError } from 'axios';
-
-const languagesOptions = [
-  { value: 'auto', label: 'Auto' },
-  { value: 'en', label: 'English' },
-  { value: 'ru', label: 'Russian' },
-]
-const modesOptions = [
-  { value: 'bullets', label: 'Bullets' },
-  { value: 'short', label: 'Short' },
-  { value: 'detailed', label: 'Detailed' },
-];
+import SummarizeForm from './feature/summarize/ui/SummarizeForm.vue';
+import SummarizeResponseText from './feature/summarize/ui/SummarizeResponseText.vue';
+import { languagesOptions, modesOptions } from './feature/constants';
 
 const text = ref('');
 const language = ref<SummarizeLanguage>('en');
@@ -66,7 +38,10 @@ const summary = ref<SummarizeResponse>({
 });
 const errorMessage = ref<string[]>([]);
 
-const summarizeText = async () => {
+const summarizeText = async (data: SummarizeRequest) => {
+  text.value = data.text;
+  mode.value = data.mode;
+  language.value = data.language;
   try {
     const result = await summarize({
       text: text.value,
